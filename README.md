@@ -1,3 +1,8 @@
+Notes:
+- https://component.kitchen/elix/mixins
+
+<hr />
+
 # \<au5ton-test>
 
 This webcomponent follows the [open-wc](https://github.com/open-wc/open-wc) recommendation.
