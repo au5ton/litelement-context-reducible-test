@@ -15,11 +15,12 @@
     "analyze": "cem analyze --litelement",
     "start": "tsc && concurrently -k -r \"tsc --watch --preserveWatchOutput\" \"wds\"",
     "build": "tsc && npm run analyze -- --exclude dist",
-    "prepublish": "tsc && npm run analyze -- --exclude dist",
     "storybook": "tsc && npm run analyze -- --exclude dist && concurrently -k -r \"tsc --watch --preserveWatchOutput\" \"wds -c .storybook/server.mjs\"",
     "storybook:build": "tsc && npm run analyze -- --exclude dist && build-storybook"
   },
   "dependencies": {
+    "@fluentui/web-components": "^2.5.14",
+    "@lit-labs/context": "^0.3.1",
     "lit": "^2.7.4"
   },
   "devDependencies": {
@@ -28,7 +29,7 @@
     "@web/dev-server-storybook": "^0.7.1",
     "concurrently": "^5.3.0",
     "tslib": "^2.3.1",
-    "typescript": "^4.5.2"
+    "typescript": "^4.9.3"
   },
   "customElements": "custom-elements.json"
 }
