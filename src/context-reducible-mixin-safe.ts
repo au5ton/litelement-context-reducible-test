@@ -10,9 +10,10 @@ export type Reducer<T> = (previous: T) => T;
  * This allows you to MUTATE a contextualized property, from EITHER the provider or ANY of the consumers,
  * and then trigger updates to ALL other consumers.
  * 
- * This was a lot of work just because we don't want to have to deep copy...
+ * This is the safer version of this mixin, where no hacky business is done to manipulate the LitElement/ContextProvider lifecycle.
+ * However, the limitation of this is that a deep clone of the context is performed, which is why the normal context process works fine for this.
  * 
- * I have no idea what other weird side effects this code has. There's a safer version in another file.
+ * Quirks of the deep clone process: https://lodash.com/docs/4.17.15#cloneDeep
  */
 export function ContextReducibleMixin<T extends AbstractConstructor, Context>(superClass: T, reduceEventName: string) {
   abstract class Mixin extends superClass {
