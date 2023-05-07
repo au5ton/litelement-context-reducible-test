@@ -1,7 +1,8 @@
 import { createContext, provide } from '@lit-labs/context'
-import { html, css, LitElement, ReactiveController } from 'lit';
+import { html, css, LitElement } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import { ContextReducibleMixin, Reducer } from './context-reducible-mixin';
+import { ContextReducibleMixin as ContextReducibleMixinSafe } from './context-reducible-mixin-safe'
 
 export type MyContext = {
   name: string;
@@ -11,7 +12,7 @@ export type MyContext = {
 export const MyContext = createContext<MyContext>(Symbol('my-context'));
 
 @customElement('my-context-provider')
-export class MyContextProvider extends ContextReducibleMixin<typeof LitElement, MyContext>(LitElement, 'my-context-update') {
+export class MyContextProvider extends ContextReducibleMixinSafe<typeof LitElement, MyContext>(LitElement, 'my-context-update') {
   // #region Styles
   static styles = css`
     :host {
@@ -63,10 +64,11 @@ export class MyContextProvider extends ContextReducibleMixin<typeof LitElement, 
   /**
    * Instructions for how the provider is supposed to respond to requests for a context update
    */
-  _handleReduce(event: CustomEvent<Reducer<MyContext>>) {
+  handleReduce(event: CustomEvent<Reducer<MyContext>>) {
     console.log('_handleReduce', this)
-    event.detail(this.context);
-    this.requestUpdate()
+    this.context = event.detail(this.context);
+    // below is not needed when doing ContextReducibleMixinSafe
+    //this.requestUpdate()
   }
   // #endregion
 }

@@ -10,6 +10,11 @@ export type Reducer<T> = (previous: T) => T;
  * and then trigger updates to ALL other consumers.
  * 
  * This was a lot of work just because we don't want to have to deep copy...
+ * 
+ * I have no idea what other weird side effects this code has. There's a safer version in another file.
+ * This "unsafe" version ACTUALLY mutates the property and doesn't replace it, so things like Element references are fair game.
+ * However, some hacky business is done to manipulate the LitElement/ContextProvider lifecycle into believing that we've updated the object even though we haven't.
+ * No private properties or methods are accessed, so it probably won't break in the future, but it's still kinda ... sketchy.
  */
 export function ContextReducibleMixin<T extends AbstractConstructor, Context>(superClass: T, reduceEventName: string) {
   abstract class Mixin extends superClass {
@@ -24,7 +29,7 @@ export function ContextReducibleMixin<T extends AbstractConstructor, Context>(su
     // The event we will use to communicate child-to-ancestor
     static _reduceEventName: string = reduceEventName;
     // Allows the host to process the reduction
-    abstract _handleReduce(event: CustomEvent<Reducer<Context>>): void;
+    abstract handleReduce(event: CustomEvent<Reducer<Context>>): void;
     // The reduction function that descendents will call
     public static reduce(target: LitElement, reducer: Reducer<Context>) {
       const event = new CustomEvent<Reducer<Context>>(Mixin._reduceEventName, {
@@ -92,7 +97,7 @@ export function ContextReducibleMixin<T extends AbstractConstructor, Context>(su
         // @ts-ignore
         super.connectedCallback();
         // 
-        this.shadowRoot?.addEventListener(Mixin._reduceEventName, this._handleReduce.bind(this) as EventListener);
+        this.shadowRoot?.addEventListener(Mixin._reduceEventName, this.handleReduce.bind(this) as EventListener);
       }
     }
     disconnectedCallback() {
@@ -100,7 +105,7 @@ export function ContextReducibleMixin<T extends AbstractConstructor, Context>(su
         // @ts-ignore
         super.disconnectedCallback();
         // 
-        this.shadowRoot?.removeEventListener(Mixin._reduceEventName, this._handleReduce.bind(this) as EventListener);
+        this.shadowRoot?.removeEventListener(Mixin._reduceEventName, this.handleReduce.bind(this) as EventListener);
       }
     }
     // #endregion
